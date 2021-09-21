@@ -5,13 +5,11 @@
     <package name="org/jetbrains/kover/xml">
         <class name="org/jetbrains/kover/xml/MainKt" sourcefilename="Main.kt">
             <method name="localRun" desc="(Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;" line="4">
-                <counter type="INSTRUCTION" missed="1" covered="0"/>
                 <counter type="LINE" missed="1" covered="0"/>
                 <counter type="COMPLEXITY" missed="1" covered="0"/>
                 <counter type="METHOD" missed="1" covered="0"/>
             </method>
             <method name="runLocalRun" desc="()V" line="8">
-                <counter type="INSTRUCTION" missed="1" covered="0"/>
                 <counter type="LINE" missed="2" covered="0"/>
                 <counter type="COMPLEXITY" missed="1" covered="0"/>
                 <counter type="METHOD" missed="1" covered="0"/>
@@ -24,13 +22,11 @@
         </class>
         <class name="org/jetbrains/kover/xml/Main" sourcefilename="Main.kt">
             <method name="&lt;init&gt;" desc="()V" line="11">
-                <counter type="INSTRUCTION" missed="0" covered="1"/>
                 <counter type="LINE" missed="0" covered="1"/>
                 <counter type="COMPLEXITY" missed="0" covered="1"/>
                 <counter type="METHOD" missed="0" covered="1"/>
             </method>
             <method name="call" desc="()I" line="13">
-                <counter type="INSTRUCTION" missed="0" covered="1"/>
                 <counter type="LINE" missed="0" covered="1"/>
                 <counter type="COMPLEXITY" missed="0" covered="1"/>
                 <counter type="METHOD" missed="0" covered="1"/>
