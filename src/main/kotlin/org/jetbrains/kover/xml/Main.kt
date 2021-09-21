@@ -10,6 +10,6 @@ fun runLocalRun(){
 
 class Main {
     fun call(): Int {
-        return 3
+        return 2
     }
 }
