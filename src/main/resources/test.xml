@@ -6,7 +6,6 @@
                 <counter type="BRANCH" missed="0" covered="0"/>
                 <counter type="LINE" missed="0" covered="1"/>
             </method>
-            <counter type="INSTRUCTION" missed="1" covered="1"/>
         </class>
         <class name="org/jetbrains/kover/xml/Main" sourcefilename="Main.kt">
             <method name="call" desc="()I">
@@ -17,7 +16,6 @@
                 <counter type="BRANCH" missed="0" covered="0"/>
                 <counter type="LINE" missed="0" covered="1"/>
             </method>
-            <counter type="INSTRUCTION" missed="1" covered="1"/>
         </class>
         <sourcefile name="Main.kt">
             <line nr="4" mi="0" ci="1" mb="0" cb="0"/>
