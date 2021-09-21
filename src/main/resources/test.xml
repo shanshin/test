@@ -5,15 +5,18 @@
     <package name="org/jetbrains/kover/xml">
         <class name="org/jetbrains/kover/xml/MainKt" sourcefilename="Main.kt">
             <method name="localRun" desc="(Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;" line="4">
+                <counter type="INSTRUCTION" missed="1" covered="0"/>
                 <counter type="LINE" missed="1" covered="0"/>
                 <counter type="COMPLEXITY" missed="1" covered="0"/>
                 <counter type="METHOD" missed="1" covered="0"/>
             </method>
             <method name="runLocalRun" desc="()V" line="8">
+                <counter type="INSTRUCTION" missed="1" covered="0"/>
                 <counter type="LINE" missed="2" covered="0"/>
                 <counter type="COMPLEXITY" missed="1" covered="0"/>
                 <counter type="METHOD" missed="1" covered="0"/>
             </method>
+            <counter type="INSTRUCTION" missed="1" covered="0"/>
             <counter type="LINE" missed="3" covered="0"/>
             <counter type="COMPLEXITY" missed="2" covered="0"/>
             <counter type="METHOD" missed="2" covered="0"/>
@@ -21,15 +24,18 @@
         </class>
         <class name="org/jetbrains/kover/xml/Main" sourcefilename="Main.kt">
             <method name="&lt;init&gt;" desc="()V" line="11">
+                <counter type="INSTRUCTION" missed="0" covered="1"/>
                 <counter type="LINE" missed="0" covered="1"/>
                 <counter type="COMPLEXITY" missed="0" covered="1"/>
                 <counter type="METHOD" missed="0" covered="1"/>
             </method>
             <method name="call" desc="()I" line="13">
+                <counter type="INSTRUCTION" missed="0" covered="1"/>
                 <counter type="LINE" missed="0" covered="1"/>
                 <counter type="COMPLEXITY" missed="0" covered="1"/>
                 <counter type="METHOD" missed="0" covered="1"/>
             </method>
+            <counter type="INSTRUCTION" missed="0" covered="1"/>
             <counter type="LINE" missed="0" covered="2"/>
             <counter type="COMPLEXITY" missed="0" covered="2"/>
             <counter type="METHOD" missed="0" covered="2"/>
@@ -41,16 +47,19 @@
             <line nr="9" mi="1" ci="0" mb="0" cb="0"/>
             <line nr="11" mi="0" ci="3" mb="0" cb="0"/>
             <line nr="13" mi="0" ci="2" mb="0" cb="0"/>
+            <counter type="INSTRUCTION" missed="1" covered="1"/>
             <counter type="LINE" missed="3" covered="2"/>
             <counter type="COMPLEXITY" missed="2" covered="2"/>
             <counter type="METHOD" missed="2" covered="2"/>
             <counter type="CLASS" missed="1" covered="1"/>
         </sourcefile>
+        <counter type="INSTRUCTION" missed="1" covered="1"/>
         <counter type="LINE" missed="3" covered="2"/>
         <counter type="COMPLEXITY" missed="2" covered="2"/>
         <counter type="METHOD" missed="2" covered="2"/>
         <counter type="CLASS" missed="1" covered="1"/>
     </package>
+    <counter type="INSTRUCTION" missed="1" covered="1"/>
     <counter type="LINE" missed="3" covered="2"/>
     <counter type="COMPLEXITY" missed="2" covered="2"/>
     <counter type="METHOD" missed="2" covered="2"/>
