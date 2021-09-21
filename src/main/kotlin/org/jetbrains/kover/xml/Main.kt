@@ -5,7 +5,7 @@ public inline fun<R> localRun(block:()->R):R{
 }
 
 fun runLocalRun(){
-    localRun{10}
+    localRun{9}
 }
 
 class Main {
