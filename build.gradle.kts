@@ -19,7 +19,7 @@ tasks.test {
     useJUnitPlatform()
 
     extensions.configure(kotlinx.kover.KoverTaskExtension::class) {
-        useJacoco = true
+        enabled = false
     }
 }
 
