@@ -7,7 +7,9 @@ class MainTest {
     @Test
     fun test() {
         println(localRun { 5 })
+        println(otherFun())
         println(Main().call())
+        println(Main().unused())
     }
 
 }
