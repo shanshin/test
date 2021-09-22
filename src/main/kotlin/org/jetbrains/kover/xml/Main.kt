@@ -8,8 +8,16 @@ fun runLocalRun(){
     localRun{9}
 }
 
+fun otherFun() : Int {
+    return 4
+}
+
 class Main {
     fun call(): Int {
         return 3
+    }
+
+    fun unused(): Int {
+        return 1
     }
 }
