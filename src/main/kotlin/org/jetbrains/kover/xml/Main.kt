@@ -10,6 +10,11 @@ fun runLocalRun(){
 
 class Main {
     fun call(): Int {
+        Service().getSomeData()
         return 3
+    }
+
+    fun newFun(): Int {
+        return 20
     }
 }

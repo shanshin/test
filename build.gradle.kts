@@ -1,6 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.5.31"
-    id("kotlinx-kover") version "0.2.0"
+    id("kotlinx-kover") version "0.2.2"
 }
 
 group = "com.jetbrains"
@@ -19,7 +19,7 @@ tasks.test {
     useJUnitPlatform()
 
     extensions.configure(kotlinx.kover.KoverTaskExtension::class) {
-        useJacoco = true
+        useJacoco = false
     }
 }
 
