@@ -8,6 +8,7 @@ class MainTest {
     fun test() {
         println(localRun { 5 })
         println(Main().call())
+        println(Service().getSomeData())
     }
 
 }
