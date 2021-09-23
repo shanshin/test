@@ -12,4 +12,8 @@ class Main {
     fun call(): Int {
         return 3
     }
+
+    fun newFun(): Int {
+        return 20
+    }
 }
