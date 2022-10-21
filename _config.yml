@@ -2,6 +2,10 @@ remote_theme: pages-themes/slate@v0.2.0
 lsi: false
 safe: true
 source: /
+highlighter: rouge
+linenos: true
+highlight:
+  linenos: true
 incremental: false
 gist:
   noscript: false
