@@ -1,0 +1,653 @@
+<h1 id="kotlinx-kover">Kotlinx-Kover</h1>
+<p><a href="https://kotlinlang.org/docs/components-stability.html"><img src="https://kotl.in/badges/alpha.svg" alt="Kotlin Alpha" /></a> <a href="https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub"><img src="https://jb.gg/badges/incubator.svg" alt="JetBrains incubator project" /></a> <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat" alt="GitHub license" /></a></p>
+<p><strong>Kover</strong> - Gradle plugin for Kotlin code coverage tools: <a href="https://github.com/JetBrains/intellij-coverage">Kover</a> and <a href="https://github.com/jacoco/jacoco">JaCoCo</a>.</p>
+<p>Minimal supported <code>Gradle</code> version: <code>6.6</code>.</p>
+<h2 id="table-of-contents">Table of contents</h2>
+<ul>
+<li><a href="#features">Features</a></li>
+<li><a href="#quickstart">Quickstart</a>
+<ul>
+<li><a href="#apply-plugin">Apply plugin to a project</a>
+<ul>
+<li><a href="#applying-plugins-with-the-plugins-dsl">Applying plugins with the plugins DSL</a></li>
+<li><a href="#legacy-plugin-application-applying-plugins-with-the-buildscript-block">Legacy Plugin Application: applying plugins with the buildscript block</a></li>
+</ul></li>
+<li><a href="#cross-project-coverage">Cross-project coverage</a></li>
+</ul></li>
+<li><a href="#configuration">Configuration</a>
+<ul>
+<li><a href="#configuring-project">Configuring project</a></li>
+<li><a href="#configuring-merged-reports">Configuring merged reports</a></li>
+<li><a href="#configuring-jvm-test-task">Configuring JVM test task</a></li>
+<li><a href="#specifying-coverage-tool">Specifying Coverage Tool</a></li>
+</ul></li>
+<li><a href="#kover-single-project-tasks">Kover single-project tasks</a></li>
+<li><a href="#kover-merged-tasks">Kover merged tasks</a></li>
+<li><a href="#example-of-configuring-android-application">Example of configuring Android application</a></li>
+<li><a href="#implicit-plugin-dependencies">Implicit plugin dependencies</a></li>
+<li><a href="#building-and-contributing">Building and contributing</a></li>
+</ul>
+<h2 id="features">Features</h2>
+<ul>
+<li>Collecting code coverage for <code>JVM</code> test tasks</li>
+<li><code>XML</code> and <code>HTML</code> report generation</li>
+<li>Support of <code>Kotlin/JVM</code>, <code>Kotlin Multiplatform</code> and mixed <code>Kotlin-Java</code> sources with zero additional configuration</li>
+<li><code>Kotlin Android</code> support without the need to divide into build types and flavours</li>
+<li>Customizable filters for instrumented classes</li>
+</ul>
+<h2 id="quickstart">Quickstart</h2>
+<h3 id="apply-plugin">Apply plugin</h3>
+<h4 id="applying-plugins-with-the-plugins-dsl">Applying plugins with the plugins DSL</h4>
+<p>In top-level build file:</p>
+<details open>
+<summary>Kotlin</summary>
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>plugins {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>     id(<span class="st">&quot;org.jetbrains.kotlinx.kover&quot;</span>) version <span class="st">&quot;0.6.1&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>}</span></code></pre></div>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<pre class="groovy"><code>plugins {
+    id &#39;org.jetbrains.kotlinx.kover&#39; version &#39;0.6.1&#39;
+}
+</code></pre>
+</details>
+
+<h4 id="legacy-plugin-application-applying-plugins-with-the-buildscript-block">Legacy Plugin Application: applying plugins with the buildscript block</h4>
+<p>In top-level build file:</p>
+<details open>
+<summary>Kotlin</summary>
+
+<div class="sourceCode" id="cb3"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a>buildscript {</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>    repositories {</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>        mavenCentral()</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>    }</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>    dependencies {</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a>        classpath(<span class="st">&quot;org.jetbrains.kotlinx:kover:0.6.1&quot;</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>    }</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>}</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>apply(plugin = <span class="st">&quot;kover&quot;</span>)</span></code></pre></div>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<pre class="groovy"><code>buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath &#39;org.jetbrains.kotlinx:kover:0.6.1&#39;
+    }
+}
+  
+apply plugin: &#39;kover&#39;    
+</code></pre>
+</details>
+
+<h3 id="cross-project-coverage">Cross-project coverage</h3>
+<p><a href="#kover-single-project-tasks">Kover tasks that are created by default</a> designed to collect project coverage only by tests located in the same project.</p>
+<p>In order to find the coverage of the project code, the tests for which are in another project, or the coverage of all the code in a multi-project build, it is necessary to calculate the cross-module coverage. <a href="#kover-merged-tasks">Merged tasks</a> are used to calculate such a coverage.</p>
+<p>Merged reports are reports that combine statistics of code coverage by test tasks from several projects.</p>
+<p>At the same time, for each project, its configuration of instrumentation and special filters (non-class filters) is applied.</p>
+<p>For every Gradle project participating in the merged report, both Kover plugin should be applied and Coverage Tool types and versions should be identical.</p>
+<p>See how to enable merge reports in <a href="#configuring-merged-reports">this section</a>.</p>
+<h2 id="configuration">Configuration</h2>
+<p>Once applied, the Kover plugin can be used out of the box without additional configuration.</p>
+<p>However, in some cases, custom settings are needed - this can be done by configuring special extensions and tasks.</p>
+<h3 id="configuring-jvm-test-task">Configuring JVM test task</h3>
+<p>In rare cases, you may need to disable instrumentation for certain classes if it causes execution errors like <code>No instrumentation registered! Must run under a registering instrumentation.</code>. It may also be convenient to ignore the test task when calculating coverage. You may configure the Kover extension for it.</p>
+<p>For example, to configure a standard test task for Kotlin/JVM named <code>test</code>, you need to add the following code to the build script of the project where this task is declared:</p>
+<details open>
+<summary>Kotlin</summary>
+
+<div class="sourceCode" id="cb5"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>tasks.test {</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>    extensions.configure(kotlinx.kover.api.KoverTaskExtension::<span class="kw">class</span>) {</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>        isDisabled.<span class="kw">set</span>(<span class="kw">false</span>) <span class="co">// true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution </span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a>        binaryReportFile.<span class="kw">set</span>(file(<span class="st">&quot;$buildDir/custom/result.bin&quot;</span>)) <span class="co">// set file name of binary report</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>        includes = listOf(<span class="st">&quot;com.example.*&quot;</span>) <span class="co">// see &quot;Instrumentation inclusion rules&quot; below</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>        excludes = listOf(<span class="st">&quot;com.example.subpackage.*&quot;</span>) <span class="co">// see &quot;Instrumentation exclusion rules&quot; below</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>    }</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>}</span></code></pre></div>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<pre class="groovy"><code>tasks.test {
+    kover {
+        disabled = false // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
+        binaryReportFile.set(file(&quot;$buildDir/custom/result.bin&quot;)) // set file name of binary report
+        includes = [&#39;com.example.*&#39;] // see &quot;Instrumentation inclusion rules&quot; below
+        excludes = [&#39;com.example.subpackage.*&#39;] // see &quot;Instrumentation exclusion rules&quot; below
+    }
+}
+</code></pre>
+</details>
+
+<p><strong>For other platforms (like Android or Kotlin-Multiplatform), the names may differ and you may also have several test tasks, so you first need to determine the name of the required task.</strong></p>
+<p>Example of configuring test task for build type <code>debug</code> in Android:</p>
+<details open>
+<summary>Kotlin</summary>
+
+<div class="sourceCode" id="cb7"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>android {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>    <span class="co">// other Android declarations</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>    testOptions {</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>        unitTests.all {</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a>            <span class="cf">if</span> (it.name == <span class="st">&quot;testDebugUnitTest&quot;</span>) {</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a>                it.extensions.configure(kotlinx.kover.api.KoverTaskExtension::<span class="kw">class</span>) {</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>                    isDisabled.<span class="kw">set</span>(<span class="kw">false</span>) <span class="co">// true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution </span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>                    binaryReportFile.<span class="kw">set</span>(file(<span class="st">&quot;$buildDir/custom/debug-report.bin&quot;</span>)) <span class="co">// set file name of binary report</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a>                    includes = listOf(<span class="st">&quot;com.example.*&quot;</span>) <span class="co">// see &quot;Instrumentation inclusion rules&quot; below</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a>                    excludes = listOf(<span class="st">&quot;com.example.subpackage.*&quot;</span>) <span class="co">// see &quot;Instrumentation exclusion rules&quot; below</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true"></a>                }</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true"></a>            }</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true"></a>        }</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true"></a>    }</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true"></a>}</span></code></pre></div>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<pre class="groovy"><code>android {
+    // other Android declarations
+
+    testOptions {
+        unitTests.all {
+            if (name == &quot;testDebugUnitTest&quot;) {
+                kover {
+                    disabled = false // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
+                    binaryReportFile.set(file(&quot;$buildDir/custom/debug-report.bin&quot;)) // set file name of binary report
+                    includes = [&#39;com.example.*&#39;] // see &quot;Instrumentation inclusion rules&quot; below
+                    excludes = [&#39;com.example.subpackage.*&#39;] // see &quot;Instrumentation exclusion rules&quot; below
+                }
+            }
+        }
+    }
+}
+</code></pre>
+</details>
+
+<p><strong>Instrumentation inclusion rules</strong></p>
+<p>Only the specified classes will be instrumented, the remaining (non-included) classes will still be present in the report, but their coverage will be zero.</p>
+<p><strong>Instrumentation exclusion rules</strong></p>
+<p>The specified classes will not be instrumented and their coverage will be zero.</p>
+<p>Instrumentation inclusion/exclusion rules are represented as a fully-qualified name of the class (several classes if wildcards are used). File or directory names are not allowed. It is possible to use <code>*</code> (zero or several of any chars) and <code>?</code> (one any char) wildcards. Wildcard <code>**</code> is similar to the <code>*</code>.</p>
+<p>Examples <code>my.package.ClassName</code> or <code>my.*.*Name</code> are allowed, while <code>my/package/ClassName.kt</code> or <code>src/my.**.ClassName</code> are not.</p>
+<p>Exclusion rules have priority over inclusion ones.</p>
+<p>Exclusion and inclusion rules from the <a href="#configuring-jvm-test-task">test task</a> (if at least one of them is not empty) take precedence over rules from the <a href="#configuring-project">common class filter</a>.</p>
+<h3 id="configuring-project">Configuring project</h3>
+<p>In the project in which the plugin is applied, you can configure instrumentation and default Kover tasks:</p>
+<details open>
+<summary>Kotlin</summary>
+
+<div class="sourceCode" id="cb9"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a>kover {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>    isDisabled.<span class="kw">set</span>(<span class="kw">false</span>) <span class="co">// true to disable instrumentation and all Kover tasks in this project</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>    tool.<span class="kw">set</span>(KoverToolDefault) <span class="co">// to change the tool, use kotlinx.kover.api.KoverTool(&quot;xxx&quot;) or kotlinx.kover.api.JacocoTool(&quot;xxx&quot;)</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a>    filters { <span class="co">// common filters for all default Kover tasks</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a>        classes { <span class="co">// common class filter for all default Kover tasks in this project</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>            includes += <span class="st">&quot;com.example.*&quot;</span> <span class="co">// class inclusion rules</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>            excludes += listOf(<span class="st">&quot;com.example.subpackage.*&quot;</span>) <span class="co">// class exclusion rules</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a>        }</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a>        annotations { <span class="co">// common annotation filter for all default Kover tasks in this project</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a>            excludes += listOf(<span class="st">&quot;com.example.Annotation&quot;</span>, <span class="st">&quot;*Generated&quot;</span>) <span class="co">// exclude declarations marked by specified annotations</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a>        }</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a>    }</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true"></a>    instrumentation {</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true"></a>        excludeTasks += <span class="st">&quot;dummy-tests&quot;</span> <span class="co">// set of test tasks names to exclude from instrumentation. The results of their execution will not be presented in the report</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true"></a>    }</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true"></a>    xmlReport {</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true"></a>        onCheck.<span class="kw">set</span>(<span class="kw">false</span>) <span class="co">// set to true to run koverXmlReport task during the execution of the check task (if it exists) of the current project</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true"></a>        reportFile.<span class="kw">set</span>(layout.buildDirectory.file(<span class="st">&quot;my-project-report/result.xml&quot;</span>)) <span class="co">// change report file name</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true"></a>        overrideFilters { </span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true"></a>            classes { <span class="co">// override common class filter</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true"></a>                includes += <span class="st">&quot;com.example2.*&quot;</span> <span class="co">// override class inclusion rules</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true"></a>                excludes += listOf(<span class="st">&quot;com.example2.subpackage.*&quot;</span>) <span class="co">// override class exclusion rules</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true"></a>            }</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true"></a>            annotations { <span class="co">// override common annotation filter for XML report (filtering will take place only by the annotations specified here)</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true"></a>                excludes += listOf(<span class="st">&quot;com.example2.Annotation&quot;</span>)</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true"></a>            }</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true"></a>        }</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true"></a>    }</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true"></a></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true"></a>    htmlReport {</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true"></a>        onCheck.<span class="kw">set</span>(<span class="kw">false</span>) <span class="co">// set to true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true"></a>        reportDir.<span class="kw">set</span>(layout.buildDirectory.dir(<span class="st">&quot;my-project-report/html-result&quot;</span>)) <span class="co">// change report directory</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true"></a>        overrideFilters { </span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true"></a>            classes { <span class="co">// override common class filter</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true"></a>                includes += <span class="st">&quot;com.example2.*&quot;</span> <span class="co">// class inclusion rules</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true"></a>                excludes += listOf(<span class="st">&quot;com.example2.subpackage.*&quot;</span>) <span class="co">// override class exclusion rules</span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true"></a>            }</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true"></a>            annotations { <span class="co">// override common annotation filter for HTML report (filtering will take place only by the annotations specified here)</span></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true"></a>                excludes += listOf(<span class="st">&quot;com.example2.Annotation&quot;</span>)</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true"></a>            }</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true"></a>        }</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true"></a>    }</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true"></a></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true"></a>    verify {</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true"></a>        onCheck.<span class="kw">set</span>(<span class="kw">true</span>) <span class="co">// set to true to run koverVerify task during the execution of the check task (if it exists) of the current project </span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true"></a>        rule { <span class="co">// add verification rule</span></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true"></a>            isEnabled = <span class="kw">true</span> <span class="co">// set to false to disable rule checking</span></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true"></a>            name = <span class="kw">null</span> <span class="co">// custom name for the rule</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true"></a>            target = kotlinx.kover.api.VerificationTarget.ALL <span class="co">// specify by which entity the code for separate coverage evaluation will be grouped</span></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true"></a>            </span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true"></a>            overrideClassFilter { <span class="co">// override common class filter</span></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true"></a>                includes += <span class="st">&quot;com.example.verify.*&quot;</span> <span class="co">// override class inclusion rules</span></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true"></a>                excludes += listOf(<span class="st">&quot;com.example.verify.subpackage.*&quot;</span>) <span class="co">// override class exclusion rules</span></span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true"></a>            }</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true"></a>            overrideAnnotationFilter { <span class="co">// override common annotation filter (filtering will take place only by the annotations specified here)</span></span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true"></a>                excludes += <span class="st">&quot;*verify.*Generated&quot;</span> <span class="co">// declarations marked only by these annotations will be excluded from this rule</span></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true"></a>            }</span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true"></a></span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true"></a>            bound { <span class="co">// add rule bound</span></span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true"></a>                minValue = <span class="dv">10</span></span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true"></a>                maxValue = <span class="dv">20</span></span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true"></a>                counter = kotlinx.kover.api.CounterType.LINE <span class="co">// change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)</span></span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true"></a>                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE <span class="co">// change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)</span></span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true"></a>            }</span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true"></a>        }</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true"></a>    }</span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true"></a>}</span></code></pre></div>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<pre class="groovy"><code>kover {
+    isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
+    tool = kotlinx.kover.api.KoverToolDefault.INSTANCE // // to change tool, use kotlinx.kover.api.KoverTool(&quot;xxx&quot;) or kotlinx.kover.api.JacocoTool(&quot;xxx&quot;)
+    filters { // common filters for all default Kover tasks
+        classes { // common class filter for all default Kover tasks in this project
+          includes.add(&quot;com.example.*&quot;) // class inclusion rules
+          excludes.addAll(&quot;com.example.subpackage.*&quot;) // class exclusion rules
+        }
+        annotations { // common annotation filter for all default Kover tasks in this project
+            excludes.addAll(&quot;com.example.Annotation&quot;, &quot;*Generated&quot;) // exclude declarations marked by specified annotations
+        }
+    }
+
+    instrumentation {
+        excludeTasks.add(&quot;dummy-tests&quot;) // set of test tasks names to exclude from instrumentation. The results of their execution will not be presented in the report
+    }
+
+    xmlReport {
+        onCheck.set(false) // set to true to run koverXmlReport task during the execution of the check task (if it exists) of the current project
+        reportFile.set(layout.buildDirectory.file(&quot;my-project-report/result.xml&quot;)) // change report file name
+        overrideFilters {
+            classes { // override common class filter
+                includes.add(&quot;com.example2.*&quot;) // override class inclusion rules
+                excludes.addAll(&quot;com.example2.subpackage.*&quot;) // override class exclusion rules
+            }
+            annotations { // override common annotation filter for XML report (filtering will take place only by the annotations specified here)
+                excludes.addAll(&quot;com.example2.Annotation&quot;) 
+            }
+        }
+    }
+
+    htmlReport {
+        onCheck.set(false) // set to true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project
+        reportDir.set(layout.buildDirectory.dir(&quot;my-project-report/html-result&quot;)) // change report directory
+        overrideFilters {
+            classes { // override common class filter
+              includes.add(&quot;com.example2.*&quot;) // class inclusion rules
+              excludes.addAll(&quot;com.example2.subpackage.*&quot;) // override class exclusion rules
+            }
+            annotations { // override common annotation filter for HTML report (filtering will take place only by the annotations specified here)
+                excludes.addAll(&quot;com.example2.Annotation&quot;)
+            }
+        }
+    }
+
+    verify {
+      onCheck.set(true) // set to true to run koverVerify task during the execution of the check task (if it exists) of the current project
+      rule { // add verification rule
+          enabled = true // set to false to disable rule checking
+          name = null // custom name for the rule
+          target = &#39;ALL&#39; // specify by which entity the code for separate coverage evaluation will be grouped
+  
+          overrideClassFilter { // override common class filter
+              includes.add(&quot;com.example.verify.*&quot;) // override class inclusion rules
+              excludes.addAll(&quot;com.example.verify.subpackage.*&quot;) // override class exclusion rules
+          }
+          overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+            excludes += &quot;*verify.*Generated&quot; // declarations marked only by these annotations will be excluded from this rule
+          }
+  
+          bound { // add rule bound
+              minValue = 10
+              maxValue = 20
+              counter = &#39;LINE&#39; // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
+              valueType = &#39;COVERED_PERCENTAGE&#39; // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+          }
+      }
+    }
+}
+</code></pre>
+</details>
+
+<p>Tool version is specified additionally, see <a href="#specifying-coverage-tool">specifying coverage tool</a> section.</p>
+<h3 id="configuring-merged-reports">Configuring merged reports</h3>
+<p>In order to create a merged report, it has to be enabled explicitly in a containing project with <code>koverMerged.enable()</code> or</p>
+<pre><code>koverMerged {
+    enable()
+}
+</code></pre>
+<p>By default, merged reports include containing project along with all its subprojects.</p>
+<p>Merged reports can also be configured in a similar manner. To do this, you need to configure the extension in the containing project (where <code>koverMerged.enable()</code> is called)</p>
+<details open>
+<summary>Kotlin</summary>
+
+<div class="sourceCode" id="cb12"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a>koverMerged {</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>    enable()  <span class="co">// create Kover merged report tasks from this project and subprojects with enabled Kover plugin</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a>  </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>    filters { <span class="co">// common filters for all default Kover merged tasks</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>        classes { <span class="co">// common class filter for all default Kover merged tasks </span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>          includes += <span class="st">&quot;com.example.*&quot;</span> <span class="co">// class inclusion rules</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>          excludes += listOf(<span class="st">&quot;com.example.subpackage.*&quot;</span>) <span class="co">// class exclusion rules</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a>        }</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a>        annotations { <span class="co">// common annotation filter for all default Kover merged tasks</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a>            excludes += listOf(<span class="st">&quot;com.example.Annotation&quot;</span>, <span class="st">&quot;*Generated&quot;</span>) <span class="co">// exclude declarations marked by specified annotations</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a>        }</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a>        projects { <span class="co">// common projects filter for all default Kover merged tasks</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a>            excludes += listOf(<span class="st">&quot;project1&quot;</span>, <span class="st">&quot;:child:project&quot;</span>) <span class="co">// Specifies the projects excluded from the merged tasks</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true"></a>        }</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true"></a>    }</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true"></a>    xmlReport {</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true"></a>        onCheck.<span class="kw">set</span>(<span class="kw">false</span>) <span class="co">// set to true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true"></a>        reportFile.<span class="kw">set</span>(layout.buildDirectory.file(<span class="st">&quot;my-merged-report/result.xml&quot;</span>)) <span class="co">// change report file name</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true"></a>        overrideClassFilter { <span class="co">// override common class filter</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true"></a>            includes += <span class="st">&quot;com.example2.*&quot;</span> <span class="co">// override class inclusion rules</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true"></a>            excludes += listOf(<span class="st">&quot;com.example2.subpackage.*&quot;</span>) <span class="co">// override class exclusion rules </span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true"></a>        }</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true"></a>        overrideAnnotationFilter { <span class="co">// override common annotation filter (filtering will take place only by the annotations specified here)</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true"></a>            excludes += <span class="st">&quot;*OverrideGenerated&quot;</span> <span class="co">// declarations marked only by specified annotations will be excluded from merged XML report</span></span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true"></a>        }</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true"></a>    }</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true"></a></span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true"></a>    htmlReport {</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true"></a>        onCheck.<span class="kw">set</span>(<span class="kw">false</span>) <span class="co">// set to true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project</span></span>
+<span id="cb12-32"><a href="#cb12-32" aria-hidden="true"></a>        reportDir.<span class="kw">set</span>(layout.buildDirectory.dir(<span class="st">&quot;my-merged-report/html-result&quot;</span>)) <span class="co">// change report directory</span></span>
+<span id="cb12-33"><a href="#cb12-33" aria-hidden="true"></a>        overrideClassFilter { <span class="co">// override common class filter</span></span>
+<span id="cb12-34"><a href="#cb12-34" aria-hidden="true"></a>            includes += <span class="st">&quot;com.example2.*&quot;</span> <span class="co">// override class inclusion rules</span></span>
+<span id="cb12-35"><a href="#cb12-35" aria-hidden="true"></a>            excludes += listOf(<span class="st">&quot;com.example2.subpackage.*&quot;</span>) <span class="co">// override class exclusion rules </span></span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true"></a>        }</span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true"></a>        overrideAnnotationFilter { <span class="co">// override common annotation filter (filtering will take place only by the annotations specified here)</span></span>
+<span id="cb12-38"><a href="#cb12-38" aria-hidden="true"></a>            excludes += <span class="st">&quot;*OverrideGenerated&quot;</span> <span class="co">// declarations marked only by specified annotations will be excluded from merged HTML report</span></span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true"></a>        }</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true"></a>    }</span>
+<span id="cb12-41"><a href="#cb12-41" aria-hidden="true"></a></span>
+<span id="cb12-42"><a href="#cb12-42" aria-hidden="true"></a>    verify {</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true"></a>        onCheck.<span class="kw">set</span>(<span class="kw">true</span>) <span class="co">// set to true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project </span></span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true"></a>        rule { <span class="co">// add verification rule</span></span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true"></a>            isEnabled = <span class="kw">true</span> <span class="co">// set to false to disable rule checking</span></span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true"></a>            name = <span class="kw">null</span> <span class="co">// custom name for the rule</span></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true"></a>            target = kotlinx.kover.api.VerificationTarget.ALL <span class="co">// specify by which entity the code for separate coverage evaluation will be grouped</span></span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true"></a>      </span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true"></a>            overrideClassFilter { <span class="co">// override common class filter</span></span>
+<span id="cb12-50"><a href="#cb12-50" aria-hidden="true"></a>                includes += <span class="st">&quot;com.example.verify.*&quot;</span> <span class="co">// override class inclusion rules</span></span>
+<span id="cb12-51"><a href="#cb12-51" aria-hidden="true"></a>                excludes += listOf(<span class="st">&quot;com.example.verify.subpackage.*&quot;</span>) <span class="co">// override class exclusion rules</span></span>
+<span id="cb12-52"><a href="#cb12-52" aria-hidden="true"></a>            }</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true"></a>            overrideAnnotationFilter { <span class="co">// override common annotation filter (filtering will take place only by the annotations specified here)</span></span>
+<span id="cb12-54"><a href="#cb12-54" aria-hidden="true"></a>                excludes += <span class="st">&quot;*verify.*Generated&quot;</span> <span class="co">// declarations marked only by these annotations will be excluded from this rule</span></span>
+<span id="cb12-55"><a href="#cb12-55" aria-hidden="true"></a>            }</span>
+<span id="cb12-56"><a href="#cb12-56" aria-hidden="true"></a>      </span>
+<span id="cb12-57"><a href="#cb12-57" aria-hidden="true"></a>            bound { <span class="co">// add rule bound</span></span>
+<span id="cb12-58"><a href="#cb12-58" aria-hidden="true"></a>                minValue = <span class="dv">10</span></span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true"></a>                maxValue = <span class="dv">20</span></span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true"></a>                counter = kotlinx.kover.api.CounterType.LINE <span class="co">// change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)</span></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true"></a>                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE <span class="co">// change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)</span></span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true"></a>            }</span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true"></a>        }</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true"></a>    }</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true"></a>}</span></code></pre></div>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<pre class="groovy"><code>koverMerged {
+    enable()  // create Kover merged report tasks from this project and subprojects with enabled Kover plugin
+  
+    filters { // common filters for all default Kover merged tasks
+        classes { // common class filter for all default Kover merged tasks 
+            includes.add(&quot;com.example.*&quot;) // class inclusion rules
+            excludes.addAll(&quot;com.example.subpackage.*&quot;) // class exclusion rules
+        }
+
+        annotations { // common annotation filter for all default Kover merged tasks
+            excludes.addAll(&quot;com.example.Annotation&quot;, &quot;*Generated&quot;) // exclude declarations marked by specified annotations
+        }
+    
+        projects { // common projects filter for all default Kover merged tasks
+            excludes.addAll(&quot;project1&quot;, &quot;:child:project&quot;) // Specifies the projects excluded in the merged tasks
+        }
+    }
+  
+  
+    xmlReport {
+        onCheck.set(false) // set to true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project
+        reportFile.set(layout.buildDirectory.file(&quot;my-merged-report/result.xml&quot;)) // change report file name
+        overrideClassFilter { // override common class filter
+            includes.add(&quot;com.example2.*&quot;) // override class inclusion rules
+            excludes.addAll(&quot;com.example2.subpackage.*&quot;) // override class exclusion rules 
+        }
+
+        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+            excludes.addAll(&quot;*OverrideGenerated&quot;) // declarations marked only by specified annotations will be excluded from merged XML report
+        }
+    }
+  
+    htmlReport {
+        onCheck.set(false) // set to true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project
+        reportDir.set(layout.buildDirectory.dir(&quot;my-merged-report/html-result&quot;)) // change report directory
+        overrideClassFilter { // override common class filter
+            includes.add(&quot;com.example2.*&quot;) // override class inclusion rules
+            excludes.addAll(&quot;com.example2.subpackage.*&quot;) // override class exclusion rules 
+        }
+        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+            excludes.addAll(&quot;*OverrideGenerated&quot;) // declarations marked only by specified annotations will be excluded from merged HTML report
+        }
+    }
+  
+    verify {
+        onCheck.set(true) // set to true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project
+        rule { // add verification rule
+            isEnabled = true // set to false to disable rule checking
+            name = null // custom name for the rule
+            target = &#39;ALL&#39; // specify by which entity the code for separate coverage evaluation will be grouped
+      
+            overrideClassFilter { // override common class filter
+                includes.add(&quot;com.example.verify.*&quot;) // override class inclusion rules
+                excludes.addAll(&quot;com.example.verify.subpackage.*&quot;) // override class exclusion rules
+            }
+            overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+                excludes.addAll(&quot;*verify.*Generated&quot;) // declarations marked only by these annotations will be excluded from this rule
+            }
+      
+            bound { // add rule bound
+                minValue = 10
+                maxValue = 20
+                counter = &#39;LINE&#39; // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
+                valueType = &#39;COVERED_PERCENTAGE&#39; // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+            }
+        }
+    }
+}
+</code></pre>
+</details>
+
+<h3 id="specifying-coverage-tool">Specifying Coverage Tool</h3>
+<h4 id="kover-coverage-tool-with-default-version">Kover Coverage Tool with default version</h4>
+<details open>
+<summary>Kotlin</summary>
+
+<div class="sourceCode" id="cb14"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a>kotlinx.kover.api.KoverToolDefault</span></code></pre></div>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<pre class="groovy"><code>kotlinx.kover.api.KoverToolDefault.INSTANCE
+</code></pre>
+</details>
+
+<h4 id="kover-coverage-tool-with-custom-version">Kover Coverage Tool with custom version</h4>
+<pre><code>kotlinx.kover.api.KoverTool(&quot;1.0.683&quot;)
+</code></pre>
+<h4 id="jacoco-coverage-tool-with-default-version">JaCoCo Coverage Tool with default version</h4>
+<details open>
+<summary>Kotlin</summary>
+
+<div class="sourceCode" id="cb17"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a>kotlinx.kover.api.JacocoToolDefault</span></code></pre></div>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<pre class="groovy"><code>kotlinx.kover.api.JacocoToolDefault.INSTANCE
+</code></pre>
+</details>
+
+<h4 id="jacoco-coverage-tool-with-custom-version">JaCoCo Coverage Tool with custom version</h4>
+<pre><code>kotlinx.kover.api.JacocoTool(&quot;0.8.8&quot;)
+</code></pre>
+<h2 id="kover-single-project-tasks">Kover single-project tasks</h2>
+<p>Tasks that are created for a project where the Kover plugin is applied:</p>
+<ul>
+<li><code>koverHtmlReport</code> - Generates code coverage HTML report for all enabled test tasks in the project.</li>
+<li><code>koverXmlReport</code> - Generates code coverage XML report for all enabled test tasks in the project.</li>
+<li><code>koverReport</code> - Executes both <code>koverXmlReport</code> and <code>koverHtmlReport</code> tasks.</li>
+<li><code>koverVerify</code> - Verifies code coverage metrics of the project based on configured rules. Always is executed before <code>check</code> task.</li>
+</ul>
+<h2 id="kover-merged-tasks">Kover merged tasks</h2>
+<p>Tasks that are created for project where the Kover plugin is applied and merged reports are enabled:</p>
+<ul>
+<li><code>koverMergedHtmlReport</code> - Generates code coverage HTML report for all enabled test tasks in all projects.</li>
+<li><code>koverMergedXmlReport</code> - Generates code coverage XML report for all enabled test tasks in all projects.</li>
+<li><code>koverMergedReport</code> - Executes both <code>koverMergedXmlReport</code> and <code>koverMergedHtmlReport</code> tasks.</li>
+<li><code>koverMergedVerify</code> - Verifies code coverage metrics of all projects based on specified rules. Always executes before <code>check</code> task.</li>
+</ul>
+<h3 id="example-of-configuring-android-application">Example of configuring Android application</h3>
+<p>Example of configuring test task for build type <code>debug</code> in Android:</p>
+<details open>
+<summary>Kotlin</summary>
+
+<p><code>build.gradle.kts</code> (Project)</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true"></a>buildscript {</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true"></a>    <span class="co">// ...</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true"></a>    dependencies {</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true"></a>        <span class="co">// ...</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true"></a>        classpath(<span class="st">&quot;org.jetbrains.kotlinx:kover:0.6.1&quot;</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true"></a>    }</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true"></a>}</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true"></a></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true"></a>plugins {</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true"></a>    id(<span class="st">&quot;org.jetbrains.kotlinx.kover&quot;</span>) version <span class="st">&quot;0.6.1&quot;</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true"></a>}</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true"></a>koverMerged {</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true"></a>    enable()</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true"></a>    filters {</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true"></a>        classes {</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true"></a>            excludes += <span class="st">&quot;*.databinding.*&quot;</span> <span class="co">// exclude classes by mask</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true"></a>        }</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true"></a>    }</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true"></a>}</span></code></pre></div>
+<p><code>build.gradle.kts</code> (Module)</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true"></a>plugins {</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true"></a>    <span class="co">// ...</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true"></a>    id(<span class="st">&quot;org.jetbrains.kotlinx.kover&quot;</span>)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true"></a>}</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true"></a>android {</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true"></a>    <span class="co">// ...</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true"></a>}</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true"></a></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true"></a>dependencies {</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true"></a>    <span class="co">// ...</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true"></a>}</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true"></a>kover {</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true"></a>    instrumentation {</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true"></a>        excludeTasks += <span class="st">&quot;testReleaseUnitTest&quot;</span> <span class="co">// exclude testReleaseUnitTest from instrumentation</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true"></a>    }</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true"></a>}</span></code></pre></div>
+<p>An example is available <a href="examples/android_kts">here</a></p>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<p><code>build.gradle</code> (Project)</p>
+<pre class="groovy"><code>plugin {
+    // ...
+    id &#39;org.jetbrains.kotlinx.kover&#39; version &quot;0.6.1&quot;
+}
+
+koverMerged {
+    enable()
+
+    filters {
+        classes {
+            excludes.add &quot;*.databinding.*&quot; // exclude classes by mask
+        }
+    }
+}
+</code></pre>
+<p><code>build.gradle</code> (Module)</p>
+<pre class="groovy"><code>plugins {
+    // ...
+    id &#39;org.jetbrains.kotlinx.kover&#39;
+}
+
+android {
+    // ...
+}
+
+dependencies {
+    // ...
+}
+
+kover {
+    instrumentation {
+        excludeTasks.add &quot;testReleaseUnitTest&quot; // exclude testReleaseUnitTest from instrumentation
+    }
+}
+</code></pre>
+<p>An example is available <a href="examples/android_groovy">here</a></p>
+</details>
+
+<h2 id="implicit-plugin-dependencies">Implicit plugin dependencies</h2>
+<p>While the plugin is being applied, the artifacts of the JaCoCo or Kover toolkit are dynamically loaded. They are downloaded from the <code>mavenCentral</code> repository.</p>
+<p>For the plugin to work correctly, you need to make sure that the <code>mavenCentral</code> (or any of its mirrors) is added to the repository list of the project in which the plugin is applied, if it doesn't already exist (usually this is the root project):</p>
+<details open>
+<summary>Kotlin</summary>
+
+<div class="sourceCode" id="cb24"><pre class="sourceCode kotlin"><code class="sourceCode kotlin"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a>repositories {</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true"></a>    mavenCentral()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true"></a>}</span></code></pre></div>
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+<pre class="groovy"><code>repositories {
+  mavenCentral()
+}
+</code></pre>
+</details>
+
+<h2 id="building-and-contributing">Building and Contributing</h2>
+<p>See <a href="CONTRIBUTING.md">Contributing Guidelines</a>.</p>
