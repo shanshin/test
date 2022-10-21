@@ -716,7 +716,7 @@ For the plugin to work correctly, you need to make sure that the `mavenCentral` 
 <details open>
 <summary>Kotlin</summary>
 
-```kotlin
+```
 repositories {
     mavenCentral()
 }
@@ -726,7 +726,7 @@ repositories {
 <details>
 <summary>Groovy</summary>
 
-```groovy
+```
 repositories {
   mavenCentral()
 }
