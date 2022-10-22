@@ -675,7 +675,7 @@ kover {
 }
 ```
 
-An example is available [here](examples/android_groovy)
+An example is available [here](https://github.com/Kotlin/kotlinx-kover/tree/release/examples/android_groovy)
 
 ## Implicit plugin dependencies
 While the plugin is being applied, the artifacts of the JaCoCo or IntelliJ toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
@@ -700,4 +700,4 @@ repositories {
 
 ## Building and Contributing
 
-See [Contributing Guidelines](CONTRIBUTING.md).
+See [Contributing Guidelines](https://github.com/Kotlin/kotlinx-kover/tree/release/CONTRIBUTING.md).
