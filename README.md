@@ -41,7 +41,7 @@ Minimal supported `Gradle` version: `6.6`.
 In top-level build file:
 
 
-<summary>Kotlin</summary>
+*Kotlin*
 
 ```kotlin
 plugins {
@@ -49,7 +49,7 @@ plugins {
 }
 ```
 
-<summary>Groovy</summary>
+*Groovy*
 
 ```groovy
 plugins {
@@ -60,7 +60,7 @@ plugins {
 #### Legacy Plugin Application: applying plugins with the buildscript block
 In top-level build file:
 
-<summary>Kotlin</summary>
+*Kotlin*
 
 ```kotlin
 buildscript {
@@ -76,7 +76,7 @@ buildscript {
 apply(plugin = "kover")
 ```
 
-<summary>Groovy</summary>
+*Groovy*
 
 ```groovy
 buildscript {
@@ -122,7 +122,7 @@ You may configure the Kover extension for it.
 
 For example, to configure a standard test task for Kotlin/JVM named `test`, you need to add the following code to the build script of the project where this task is declared:
 
-<summary>Kotlin</summary>
+*Kotlin*
 
 ```kotlin
 tasks.test {
@@ -135,7 +135,7 @@ tasks.test {
 }
 ```
 
-<summary>Groovy</summary>
+*Groovy*
 
 ```groovy
 tasks.test {
@@ -151,7 +151,7 @@ tasks.test {
 **For other platforms (like Android or Kotlin-Multiplatform), the names may differ and you may also have several test tasks, so you first need to determine the name of the required task.**
 
 Example of configuring test task for build type `debug` in Android:
-<summary>Kotlin</summary>
+*Kotlin*
 
 ```kotlin
 android {
@@ -172,7 +172,7 @@ android {
 }
 ```
 
-<summary>Groovy</summary>
+*Groovy*
 
 ```groovy
 android {
@@ -215,7 +215,7 @@ Exclusion and inclusion rules from the [test task](#configuring-jvm-test-task) (
 ### Configuring project
 In the project in which the plugin is applied, you can configure instrumentation and default Kover tasks:
 
-<summary>Kotlin</summary>
+*Kotlin*
 
 ```kotlin
 kover {
@@ -289,7 +289,7 @@ kover {
 }
 ```
 
-<summary>Groovy</summary>
+*Groovy*
 
 ```groovy
 kover {
@@ -378,7 +378,7 @@ By default, merged reports include containing project along with all its subproj
 
 Merged reports can also be configured in a similar manner. To do this, you need to configure the extension in the containing project (where `koverMerged.enable()` is called)
 
-<summary>Kotlin</summary>
+*Kotlin*
 
 ```kotlin
 koverMerged {
@@ -448,7 +448,7 @@ koverMerged {
 }
 ```
 
-<summary>Groovy</summary>
+*Groovy*
 
 ```groovy
 koverMerged {
@@ -524,13 +524,13 @@ koverMerged {
 
 ### Specifying Coverage Engine
 #### IntelliJ Coverage Engine with default version
-<summary>Kotlin</summary>
+*Kotlin*
 
 ```kotlin
 kotlinx.kover.api.DefaultIntellijEngine
 ```
 
-<summary>Groovy</summary>
+*Groovy*
 
 ```groovy
 kotlinx.kover.api.DefaultIntellijEngine.INSTANCE
@@ -542,13 +542,13 @@ kotlinx.kover.api.IntellijEngine("1.0.683")
 ```
 
 #### JaCoCo Coverage Engine with default version
-<summary>Kotlin</summary>
+*Kotlin*
 
 ```kotlin
 kotlinx.kover.api.DefaultJacocoEngine
 ```
 
-<summary>Groovy</summary>
+*Groovy*
 
 ```groovy
 kotlinx.kover.api.DefaultJacocoEngine.INSTANCE
@@ -576,7 +576,7 @@ Tasks that are created for project where the Kover plugin is applied and merged 
 ### Example of configuring Android application
 
 Example of configuring test task for build type `debug` in Android:
-<summary>Kotlin</summary>
+*Kotlin*
 
 `build.gradle.kts` (Project)
 ```kotlin
@@ -627,7 +627,7 @@ kover {
 
 An example is available [here](examples/android_kts)
 
-<summary>Groovy</summary>
+*Groovy*
 
 `build.gradle` (Project)
 ```groovy
@@ -676,7 +676,7 @@ While the plugin is being applied, the artifacts of the JaCoCo or IntelliJ toolk
 
 For the plugin to work correctly, you need to make sure that the `mavenCentral` (or any of its mirrors) is added to the repository list of the project in which the plugin is applied, if it doesn't already exist (usually this is the root project):
 
-<summary>Kotlin</summary>
+*Kotlin*
 
 ```
 repositories {
@@ -684,7 +684,7 @@ repositories {
 }
 ```
 
-<summary>Groovy</summary>
+*Groovy*
 
 ```
 repositories {
