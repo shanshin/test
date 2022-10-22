@@ -133,7 +133,10 @@ tasks.test {
         excludes = listOf("com.example.subpackage.*") // see "Instrumentation exclusion rules" below
     }
 }
+
 ```
+
+
 
 *Groovy*
 
@@ -146,7 +149,10 @@ tasks.test {
         excludes = ['com.example.subpackage.*'] // see "Instrumentation exclusion rules" below
     }
 }
+
 ```
+
+
 
 **For other platforms (like Android or Kotlin-Multiplatform), the names may differ and you may also have several test tasks, so you first need to determine the name of the required task.**
 
