@@ -620,7 +620,7 @@ kover {
 }
 ```
 
-An example is available [here](examples/android_kts)
+An example is available [here](https://github.com/Kotlin/kotlinx-kover/tree/release/examples/android_kts)
 
 *Groovy*
 
